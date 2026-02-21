@@ -1,0 +1,16 @@
+[package]
+name = "resurgence_core"
+version = "0.1.0"
+edition = "2021"
+description = "High-performance VaR/CVaR Monte Carlo engine for Resurgence AI"
+
+[lib]
+name = "resurgence_core"
+crate-type = ["cdylib"]
+
+[dependencies]
+pyo3 = { version = "0.22.6", features = ["abi3-py311", "extension-module"] }
+rand = "0.8.5"
+rand_distr = "0.4.3"
+rayon = "1.10.0"
+thiserror = "1.0.64"

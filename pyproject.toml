@@ -1,0 +1,53 @@
+[build-system]
+requires = ["maturin>=1.5,<2.0"]
+build-backend = "maturin"
+
+[project]
+name = "resurgence-ai"
+version = "0.1.0"
+description = "Resurgence AI: hybrid Python/Rust agentic risk engine"
+readme = "README.md"
+requires-python = ">=3.11"
+authors = [{ name = "Resurgence AI Team" }]
+dependencies = [
+  "duckdb>=1.1.0",
+  "langgraph>=0.2.50",
+  "langchain-openai>=0.2.14",
+  "numpy>=1.26.4",
+  "pandas>=2.2.3",
+  "pydantic>=2.9.2",
+  "python-dotenv>=1.0.1",
+  "yfinance>=0.2.54"
+]
+
+[project.optional-dependencies]
+dev = [
+  "maturin>=1.5,<2.0",
+  "mypy>=1.12.0",
+  "pytest>=8.3.3",
+  "ruff>=0.7.0"
+]
+
+[project.scripts]
+resurgence = "resurgence_py.main:cli"
+resurgence-benchmark = "resurgence_py.benchmark:cli"
+
+[tool.maturin]
+manifest-path = "resurgence_core/Cargo.toml"
+module-name = "resurgence_core"
+bindings = "pyo3"
+python-source = "."
+features = ["pyo3/extension-module"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+pythonpath = ["."]
+
+[tool.ruff]
+line-length = 100
+target-version = "py311"
+
+[tool.mypy]
+python_version = "3.11"
+strict = true
+packages = ["resurgence_py"]

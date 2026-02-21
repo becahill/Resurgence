@@ -1,0 +1,15 @@
+version: "3.9"
+
+services:
+  resurgence:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: resurgence_ai
+    environment:
+      OPENAI_API_KEY: ${OPENAI_API_KEY:-}
+      PYTHONUNBUFFERED: "1"
+    volumes:
+      - ./:/workspace
+    working_dir: /workspace
+    command: ["bash", "-lc", "maturin develop --release && python -m resurgence_py.main --tickers SPY,QQQ,IWM"]
