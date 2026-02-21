@@ -20,6 +20,10 @@ async def _run(args: argparse.Namespace) -> None:
         horizon_days=args.horizon_days,
         seed=args.seed,
         llm_model=args.llm_model,
+        inquisitor_timeout_s=args.inquisitor_timeout_s,
+        max_audit_reruns=args.max_audit_reruns,
+        target_latency_ms=args.target_latency_ms,
+        initial_state=args.initial_state,
     )
 
     flow = ResurgenceFlow(db_path=args.db_path)
@@ -44,6 +48,10 @@ def cli() -> None:
     parser.add_argument("--horizon-days", type=int, default=10)
     parser.add_argument("--seed", type=int, default=42)
     parser.add_argument("--llm-model", type=str, default="gpt-4o-mini")
+    parser.add_argument("--inquisitor-timeout-s", type=float, default=20.0)
+    parser.add_argument("--max-audit-reruns", type=int, default=2)
+    parser.add_argument("--target-latency-ms", type=float, default=200.0)
+    parser.add_argument("--initial-state", type=int, default=2, choices=[0, 1, 2])
     parser.add_argument("--db-path", type=str, default="resurgence.duckdb")
     parser.add_argument("--log-level", type=str, default="INFO")
     args = parser.parse_args()

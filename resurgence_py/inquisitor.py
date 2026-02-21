@@ -2,14 +2,19 @@ from __future__ import annotations
 
 import asyncio
 import logging
-from collections.abc import Sequence
 from datetime import date, timedelta
 
 import pandas as pd
 import yfinance as yf
 
 from resurgence_py.db import init_db, read_crash_profile, read_portfolio_series, write_market_data
-from resurgence_py.models import CrashVolProfile, FlowInput, MarketDataRecord, PortfolioSeries
+from resurgence_py.models import (
+    CrashVolProfile,
+    DataPullConfig,
+    FlowInput,
+    MarketDataRecord,
+    PortfolioSeries,
+)
 
 logger = logging.getLogger(__name__)
 
@@ -34,20 +39,25 @@ class Inquisitor:
         self.retry_backoff_s = retry_backoff_s
         init_db(self.db_path)
 
-    async def run(self, payload: FlowInput) -> tuple[PortfolioSeries, CrashVolProfile]:
-        records = await self._fetch_all(payload)
+    async def run(
+        self,
+        payload: FlowInput,
+        pull_config: DataPullConfig,
+    ) -> tuple[PortfolioSeries, CrashVolProfile]:
+        records = await self._fetch_all(payload, pull_config)
         await asyncio.to_thread(write_market_data, self.db_path, records)
 
         portfolio = await asyncio.to_thread(read_portfolio_series, self.db_path, payload.tickers)
         crash_profile = await asyncio.to_thread(read_crash_profile, self.db_path, payload.tickers)
         return portfolio, crash_profile
 
-    async def _fetch_all(self, payload: FlowInput) -> list[MarketDataRecord]:
+    async def _fetch_all(self, payload: FlowInput, pull_config: DataPullConfig) -> list[MarketDataRecord]:
         tasks = [
             self._fetch_with_retry(
                 ticker=ticker,
-                start_date=payload.start_date,
-                end_date=payload.end_date,
+                start_date=pull_config.start_date,
+                end_date=pull_config.end_date,
+                timeout_s=pull_config.request_timeout_s,
             )
             for ticker in payload.tickers
         ]
@@ -67,6 +77,7 @@ class Inquisitor:
         ticker: str,
         start_date: date,
         end_date: date,
+        timeout_s: float,
     ) -> list[MarketDataRecord]:
         for attempt in range(1, self.max_retries + 1):
             try:
@@ -75,6 +86,7 @@ class Inquisitor:
                     ticker,
                     start_date,
                     end_date,
+                    timeout_s,
                 )
             except Exception as exc:  # noqa: BLE001
                 if attempt == self.max_retries:
@@ -104,6 +116,7 @@ class Inquisitor:
         ticker: str,
         start_date: date,
         end_date: date,
+        timeout_s: float,
     ) -> list[MarketDataRecord]:
         # yfinance uses an exclusive end-date.
         end_exclusive = end_date + timedelta(days=1)
@@ -112,7 +125,7 @@ class Inquisitor:
             end=end_exclusive.isoformat(),
             interval="1d",
             auto_adjust=False,
-            timeout=self.request_timeout_s,
+            timeout=timeout_s,
         )
 
         if frame.empty:
