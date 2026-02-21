@@ -56,6 +56,7 @@ def test_fallback_auditor_flags_extreme_regime() -> None:
     assert report.flagged is True
     assert report.severity in {"warning", "critical"}
     assert report.black_swan_ratio > 1.0
+    assert isinstance(report.anomalies, list)
 
 
 def test_auditor_requests_rerun_on_hallucination() -> None:
@@ -107,3 +108,4 @@ def test_auditor_requests_rerun_on_hallucination() -> None:
     assert report.hallucination_detected is True
     assert report.requires_rerun is True
     assert report.suggested_lookback_extension_days >= 252
+    assert any(anomaly.rule_id == "metrics.sharpe_bounds" for anomaly in report.anomalies)

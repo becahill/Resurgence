@@ -219,6 +219,19 @@ class AuditSeverity(StrEnum):
     CRITICAL = "critical"
 
 
+class AuditAnomaly(BaseModel):
+    """Structured deterministic anomaly emitted by the auditor."""
+
+    model_config = ConfigDict(extra="forbid")
+
+    rule_id: str = Field(min_length=1)
+    severity: AuditSeverity
+    message: str = Field(min_length=1)
+    observed: float | None = None
+    threshold: float | None = None
+    context: dict[str, str | int | float | bool] = Field(default_factory=dict)
+
+
 class AuditReport(BaseModel):
     """LLM + heuristic anomaly review for risk outputs."""
 
@@ -235,6 +248,7 @@ class AuditReport(BaseModel):
     suggested_timeout_s: float | None = Field(default=None, ge=1.0, le=120.0)
     detected_sharpe: float = 0.0
     detected_zscore: float = 0.0
+    anomalies: list[AuditAnomaly] = Field(default_factory=list)
     recommended_actions: list[str] = Field(default_factory=list)
 
 

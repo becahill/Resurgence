@@ -1,0 +1,104 @@
+{
+  "generated_at_utc": "2026-02-21T23:02:52.838371+00:00",
+  "path_counts": [
+    1000,
+    10000,
+    100000,
+    1000000
+  ],
+  "horizon_days": 10,
+  "sample_points": 2500,
+  "seed": 7,
+  "platform": "macOS-26.3-arm64-arm-64bit-Mach-O",
+  "python_version": "3.13.7",
+  "results": [
+    {
+      "engine": "python",
+      "simulations": 1000,
+      "runtime_s": 0.0006998749740887433,
+      "peak_rss_mb": 48.515625,
+      "delta_rss_mb": 0.484375,
+      "var": 0.07095639561171274,
+      "cvar": 0.09161791700245925,
+      "available": true,
+      "error": null
+    },
+    {
+      "engine": "rust",
+      "simulations": 1000,
+      "runtime_s": 0.00029299999005161226,
+      "peak_rss_mb": 48.609375,
+      "delta_rss_mb": 0.359375,
+      "var": 0.07375724658343119,
+      "cvar": 0.10390111827819974,
+      "available": true,
+      "error": null
+    },
+    {
+      "engine": "python",
+      "simulations": 10000,
+      "runtime_s": 0.0037608749989885837,
+      "peak_rss_mb": 48.765625,
+      "delta_rss_mb": 0.78125,
+      "var": 0.07508971616659532,
+      "cvar": 0.0991480149524451,
+      "available": true,
+      "error": null
+    },
+    {
+      "engine": "rust",
+      "simulations": 10000,
+      "runtime_s": 0.0009733329934533685,
+      "peak_rss_mb": 48.546875,
+      "delta_rss_mb": 0.453125,
+      "var": 0.0755557690738965,
+      "cvar": 0.09970992163996352,
+      "available": true,
+      "error": null
+    },
+    {
+      "engine": "python",
+      "simulations": 100000,
+      "runtime_s": 0.03194149999762885,
+      "peak_rss_mb": 57.390625,
+      "delta_rss_mb": 9.234375,
+      "var": 0.07554639081582548,
+      "cvar": 0.09982764622320289,
+      "available": true,
+      "error": null
+    },
+    {
+      "engine": "rust",
+      "simulations": 100000,
+      "runtime_s": 0.006655834004050121,
+      "peak_rss_mb": 54.828125,
+      "delta_rss_mb": 6.6875,
+      "var": 0.07553714769527953,
+      "cvar": 0.09974010012078303,
+      "available": true,
+      "error": null
+    },
+    {
+      "engine": "python",
+      "simulations": 1000000,
+      "runtime_s": 0.31755654100561514,
+      "peak_rss_mb": 161.484375,
+      "delta_rss_mb": 113.421875,
+      "var": 0.07516268665074666,
+      "cvar": 0.09977442719425168,
+      "available": true,
+      "error": null
+    },
+    {
+      "engine": "rust",
+      "simulations": 1000000,
+      "runtime_s": 0.06794754098518752,
+      "peak_rss_mb": 109.734375,
+      "delta_rss_mb": 61.703125,
+      "var": 0.07512682946690974,
+      "cvar": 0.09953086641949181,
+      "available": true,
+      "error": null
+    }
+  ]
+}

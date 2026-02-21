@@ -31,6 +31,7 @@ dev = [
 [project.scripts]
 resurgence = "resurgence_py.main:cli"
 resurgence-benchmark = "resurgence_py.benchmark:cli"
+resurgence-validate = "validation.backtest:cli"
 
 [tool.maturin]
 manifest-path = "resurgence_core/Cargo.toml"

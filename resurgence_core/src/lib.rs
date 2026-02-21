@@ -464,7 +464,7 @@ pub fn simulate_regime_var_cvar<'py>(
 
     // Zero-copy handoff: ndarray owns the Rust allocation and NumPy takes ownership
     // directly without cloning Python-side buffers.
-    let losses_array = PyArray1::from_owned_array(py, Array1::from_vec(losses));
+    let losses_array = PyArray1::from_owned_array_bound(py, Array1::from_vec(losses));
 
     Ok((result, losses_array))
 }

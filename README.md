@@ -39,7 +39,13 @@ ResurgenceFlow (LangGraph DAG)
 ```text
 .
 ├── Dockerfile
+├── MODEL.md
+├── benchmarks
+│   ├── results.json
+│   └── results.md
 ├── docker-compose.yml
+├── notebooks
+│   └── resurgence_case_study.ipynb
 ├── pyproject.toml
 ├── README.md
 ├── resurgence_core
@@ -56,12 +62,19 @@ ResurgenceFlow (LangGraph DAG)
 │   ├── inquisitor.py
 │   ├── logging_config.py
 │   ├── main.py
-│   └── models.py
+│   ├── models.py
+│   └── visualization.py
+├── validation
+│   ├── backtest.py
+│   └── tests.py
 └── tests
     ├── test_auditor.py
+    ├── test_auditor_rules.py
     ├── test_db.py
     ├── test_engine.py
-    └── test_models.py
+    ├── test_models.py
+    ├── test_validation.py
+    └── test_visualization.py
 ```
 
 ## Quick Start
@@ -69,15 +82,14 @@ ResurgenceFlow (LangGraph DAG)
 ### 1) Install and Build
 
 ```bash
-python -m pip install -U pip
-python -m pip install -e .[dev]
-maturin develop --release
+python3 -m pip install -U pip
+python3 -m pip install -e .[dev]
 ```
 
 ### 2) Run the Flow
 
 ```bash
-python -m resurgence_py.main \
+python3 -m resurgence_py.main \
   --tickers SPY,QQQ,IWM \
   --start-date 2018-01-01 \
   --end-date 2026-02-21 \
@@ -97,21 +109,50 @@ pytest -q
 docker compose up --build
 ```
 
-## Rust vs Pure Python Benchmark
+## Validation
 
-Use the included benchmark runner:
+Run a rolling VaR/CVaR backtest with statistical coverage tests:
 
 ```bash
-python -m resurgence_py.benchmark --simulations 100000 --horizon-days 10 --sample-points 2500
+python3 -m validation.backtest \
+  --tickers SPY,QQQ,TLT,GLD \
+  --start-date 2018-01-01 \
+  --end-date 2026-02-21 \
+  --rolling-window 252 \
+  --confidence-level 0.95 \
+  --method monte_carlo \
+  --output-dir validation/results
 ```
 
-Typical result on modern laptop hardware:
+Outputs:
 
-- Pure Python engine: ~1.6s to 2.8s
-- Rust (`resurgence_core`) engine: ~0.15s to 0.40s
-- Speedup: **~5x to 12x** (depends on CPU/vectorization/threading)
+- `validation/results/rolling_backtest.csv` with per-date realized loss, VaR/CVaR, breach flag.
+- `validation/results/summary.json` with breach rate and Kupiec/Christoffersen test results.
 
-These figures are representative; always benchmark in your deployment environment.
+## Benchmarks
+
+Run the reproducible benchmark suite (Python vs Rust, runtime + memory):
+
+```bash
+python3 -m resurgence_py.benchmark \
+  --paths 1000,10000,100000,1000000 \
+  --horizon-days 10 \
+  --sample-points 2500 \
+  --output-json benchmarks/results.json \
+  --output-markdown benchmarks/results.md
+```
+
+Current checked-in benchmark artifacts:
+
+- `benchmarks/results.json` (machine-readable payload)
+- `benchmarks/results.md` (human-readable table)
+
+## Methodology
+
+- Model assumptions and limits: see `MODEL.md`.
+- Deterministic anomaly rules are in `resurgence_py/auditor.py` (VaR monotonicity, variance, distribution sanity, MAD outliers).
+- Visualization utilities are in `resurgence_py/visualization.py`.
+- End-to-end case study notebook: `notebooks/resurgence_case_study.ipynb`.
 
 ## Operational Notes
 
